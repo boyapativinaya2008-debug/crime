@@ -22,7 +22,6 @@ export default function AdminLogin() {
   const [showPass, setShowPass] = useState(false);
 
   const handleChange = (e) => {
-
     setForm({
       ...form,
       [e.target.name]: e.target.value
@@ -32,7 +31,6 @@ export default function AdminLogin() {
   };
 
   const handleSubmit = async (e) => {
-
     e.preventDefault();
 
     if (!form.email || !form.password) {
@@ -40,40 +38,38 @@ export default function AdminLogin() {
     }
 
     try {
-
       setLoading(true);
 
-      const res = await api.post(
-        "/auth/login",
-        {
-          ...form,
-          role: "admin"
-        }
-      );
+      const res = await api.post("/auth/login", {
+        email: form.email,
+        password: form.password
+      });
 
       console.log("ADMIN LOGIN:", res.data.user);
 
-      localStorage.setItem(
-        "token",
-        res.data.token
-      );
+      // 🔥 ROLE CHECK (IMPORTANT FIX)
+      if (res.data.user.role !== "admin") {
+        setError("Access denied. Admin only login.");
+        setLoading(false);
+        return;
+      }
 
-      localStorage.setItem(
-        "user",
-        JSON.stringify(res.data.user)
-      );
+      // store auth data
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
 
       navigate("/admin/dashboard");
 
     } catch (err) {
+      console.log(err);
 
       setError(
         err.response?.data?.msg ||
+        err.response?.data?.message ||
         "Login failed. Please try again."
       );
 
     } finally {
-
       setLoading(false);
     }
   };
@@ -96,86 +92,12 @@ export default function AdminLogin() {
         <div className="admin-brand">
 
           <div className="admin-logo">
-
-            <svg
-              width="32"
-              height="32"
-              viewBox="0 0 32 32"
-              fill="none"
-            >
-
-              <rect
-                width="32"
-                height="32"
-                rx="8"
-                fill="white"
-                fillOpacity="0.15"
-              />
-
-              <path
-                d="M16 4L6 10V22L16 28L26 22V10L16 4Z"
-                stroke="white"
-                strokeWidth="2"
-                fill="none"
-              />
-
-              <circle
-                cx="16"
-                cy="16"
-                r="4"
-                fill="white"
-              />
-
-            </svg>
-
-            <span>CivicSnap</span>
-
+            🛡️ CivicSnap
           </div>
 
           <p className="admin-brand-sub">
             Admin Panel
           </p>
-
-        </div>
-
-        <div className="admin-auth-hero">
-
-          <h1>
-            Manage. Monitor.
-            <br />
-            Make a Difference.
-          </h1>
-
-          <p>
-            The CivicSnap admin panel gives you full
-            control over civic reports, departments,
-            officers, announcements, and community
-            management.
-          </p>
-
-          <div className="admin-feature-list">
-
-            <div className="admin-feature-item">
-              ✅ Manage civic complaints
-            </div>
-
-            <div className="admin-feature-item">
-              ✅ Assign officers & departments
-            </div>
-
-            <div className="admin-feature-item">
-              ✅ Track resolution progress
-            </div>
-
-            <div className="admin-feature-item">
-              ✅ Post city announcements
-            </div>
-
-            <div className="admin-feature-item">
-              ✅ Access analytics & reports
-            </div>
-
-          </div>
 
         </div>
 
@@ -261,9 +183,7 @@ export default function AdminLogin() {
 
                 <span
                   className="admin-eye"
-                  onClick={() =>
-                    setShowPass(!showPass)
-                  }
+                  onClick={() => setShowPass(!showPass)}
                 >
                   {showPass ? "🙈" : "👁️"}
                 </span>
@@ -280,15 +200,9 @@ export default function AdminLogin() {
             >
 
               {loading ? (
-
                 <span className="admin-spinner"></span>
-
               ) : (
-
-                <>
-                  Sign In as Admin →
-                </>
-
+                <>Sign In as Admin →</>
               )}
 
             </button>
@@ -302,7 +216,6 @@ export default function AdminLogin() {
           <div className="admin-switch-link">
 
             Don't have an admin account?{" "}
-
             <Link to="/admin/register">
               Register here
             </Link>
@@ -315,7 +228,6 @@ export default function AdminLogin() {
           >
 
             Are you a user?{" "}
-
             <Link to="/login">
               User Login
             </Link>

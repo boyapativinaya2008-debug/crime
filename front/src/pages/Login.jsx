@@ -21,40 +21,42 @@ export default function Login() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      // Inside Login.jsx handleSubmit
-const res = await axios.post("http://localhost:3000/api/auth/login", {
-  email: form.email,
-  password: form.password,
-  role: "user" // or "admin" for the admin login page
-});
-
-// VERY IMPORTANT: Store the token for later use
-localStorage.setItem("token", res.data.token); 
-localStorage.setItem("user", JSON.stringify(res.data.user)); 
-      //Redirect based on role
-      if (res.data.user.role === "admin") {
-        navigate("/admin/dashboard");
-      } else {
-        navigate("/dashboard");
+  try {
+    const res = await axios.post(
+      "http://localhost:5000/api/auth/login",
+      {
+        ...form,
+        role,
       }
-    } catch (err) {
-      console.error("Login Error:", err);
-      setError(
-        err.response?.data?.msg ||
-          err.response?.data?.message ||
-          err.response?.data?.error ||
-          "Login failed. Please check your credentials."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    );
 
+    // Save token + user
+    localStorage.setItem("token", res.data.token);
+    localStorage.setItem("user", JSON.stringify(res.data.user));
+
+    // Redirect
+    if (res.data.user.role === "admin") {
+      navigate("/admin/dashboard");
+    } else {
+      navigate("/dashboard");
+    }
+  } catch (err) {
+    console.error("Login Error:", err);
+
+    setError(
+      err.response?.data?.msg ||
+      err.response?.data?.message ||
+      err.response?.data?.error ||
+      "Login failed. Please check your credentials."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <div className="auth-container">
       {/* BACKGROUND */}

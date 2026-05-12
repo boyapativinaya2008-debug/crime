@@ -71,10 +71,10 @@ export default function ReportComplaint() {
       formData.append("description", form.description);
       
       // FIXED: Name must match upload.single("image") in server.js
-      formData.append("image", form.image); 
+      formData.append("evidence", form.image); 
 
       await axios.post(
-        "http://localhost:3000/api/complaints", // Ensure no trailing slash
+        "http://localhost:5000/api/complaints", // Ensure no trailing slash
         formData,
         {
           headers: {

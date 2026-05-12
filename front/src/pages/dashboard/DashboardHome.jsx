@@ -30,7 +30,7 @@ export default function DashboardHome() {
 
         // USER
         const userRes = await axios.get(
-          "http://localhost:3000/api/auth/me",
+          "http://localhost:5000/api/auth/me",
           {
             headers: {
               Authorization: `Bearer ${token}`
@@ -42,7 +42,7 @@ export default function DashboardHome() {
 
         // COMPLAINT STATS
         const complaintRes = await axios.get(
-          "http://localhost:3000/api/complaints/my",
+          "http://localhost:5000/api/complaints/my",
           {
             headers: {
               Authorization: `Bearer ${token}`
